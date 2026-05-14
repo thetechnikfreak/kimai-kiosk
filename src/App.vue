@@ -9,7 +9,16 @@ import { Switch, SwitchGroup, SwitchLabel } from '@headlessui/vue'
 
 type NDEFReaderLike = {
   scan: () => Promise<void>
-  addEventListener: (type: string, listener: (event: any) => void) => void
+  addEventListener: (type: string, listener: (event: NFCReadingEventLike) => void) => void
+}
+
+type NFCReadingEventLike = {
+  serialNumber?: string
+  message?: {
+    records?: Array<{
+      data?: unknown
+    }>
+  }
 }
 
 const showSettings = ref(false)
@@ -55,7 +64,12 @@ async function startNfcReader() {
         return
       }
 
-      const payload = event.message?.records?.[0]?.data
+      const firstRecord = event.message?.records?.[0]
+      if (!firstRecord) {
+        return
+      }
+
+      const payload = firstRecord.data
       if (payload instanceof DataView) {
         const record = payload.buffer.slice(payload.byteOffset, payload.byteOffset + payload.byteLength)
         processScannedId(textDecoder.decode(record))
