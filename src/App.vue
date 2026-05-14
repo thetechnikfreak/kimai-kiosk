@@ -60,7 +60,7 @@ async function startNfcReader() {
       }
     })
   } catch (error) {
-    console.log('NFC unavailable', error)
+    console.log('NFC reader initialization failed', error)
   }
 }
 
@@ -121,7 +121,7 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
     <div class="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div class="mt-10 sm:mx-auto sm:w-full sm:min-w-[920px]">
         <div class="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
-          <p>Scan Employee ID / NFC Tag</p>
+          <p>Scan Employee Barcode or NFC Tag</p>
           <br />
           <TransitionRoot as="template" :show="store.showDialog">
             <Dialog as="div" class="relative z-10" @close="store.showDialog = false">

@@ -101,7 +101,7 @@ export const useKimaiStore = defineStore(
     async function toggleTimesheetRecordState(userAccNumber: string | number) {
       const userId = userMapping[String(userAccNumber)]
       if (!userId) {
-        console.log("USER NOT FOUND", userAccNumber)
+        console.log("Unknown employee ID scanned", userAccNumber)
         return
       }
       console.log("USERID", userAccNumber)
