@@ -99,9 +99,9 @@ export const useKimaiStore = defineStore(
     }
 
     async function toggleTimesheetRecordState(userAccNumber: Number) {
-      let userId = userMapping[userAccNumber]
+      const userId = userMapping[userAccNumber]
       console.log("USERID", userAccNumber)
-      let runningRecord = await getUnfinishedTimesheetRecord(userId)
+      const runningRecord = await getUnfinishedTimesheetRecord(userId)
       if (runningRecord) {
         console.log("RUNNING",runningRecord)
         endTimesheetRecord(runningRecord['id'], userId)
