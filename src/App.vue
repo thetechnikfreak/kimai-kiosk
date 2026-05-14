@@ -8,9 +8,9 @@ import { useKimaiStore } from './stores/kimai'
 import { Switch, SwitchGroup, SwitchLabel } from '@headlessui/vue'
 
 const showSettings = ref(false)
-const open = ref(false)
 
 let keyBuffer = ''
+const textDecoder = new TextDecoder()
 
 const particlesInit = async (engine: Engine) => {
   await loadFull(engine)
@@ -24,6 +24,46 @@ const particlesLoaded = async (container: Container) => {
 
 const store = useKimaiStore()
 
+function processScannedId(scannedId: string) {
+  const trimmedId = scannedId.trim()
+  if (!trimmedId) {
+    return
+  }
+  store.toggleTimesheetRecordState(trimmedId)
+}
+
+async function startNfcReader() {
+  const NDEFReaderCtor = (window as Window & {
+    NDEFReader?: new () => {
+      scan: () => Promise<void>
+      addEventListener: (type: string, listener: (event: any) => void) => void
+    }
+  }).NDEFReader
+
+  if (!NDEFReaderCtor) {
+    return
+  }
+
+  try {
+    const ndefReader = new NDEFReaderCtor()
+    await ndefReader.scan()
+    ndefReader.addEventListener('reading', (event) => {
+      if (event.serialNumber) {
+        processScannedId(event.serialNumber)
+        return
+      }
+
+      const payload = event.message?.records?.[0]?.data
+      if (payload instanceof DataView) {
+        const record = payload.buffer.slice(payload.byteOffset, payload.byteOffset + payload.byteLength)
+        processScannedId(textDecoder.decode(record))
+      }
+    })
+  } catch (error) {
+    console.log('NFC unavailable', error)
+  }
+}
+
 onBeforeMount(() => {
   store.loadUsers()
   store.loadProjects()
@@ -32,6 +72,7 @@ onBeforeMount(() => {
 
 onMounted(() => {
   document.body.classList.add('bg-black')
+  void startNfcReader()
 })
 
 document.onkeydown = function (evt) {
@@ -43,7 +84,7 @@ document.onkeydown = function (evt) {
     console.log(keyBuffer)
     console.log(store.userMapping)
     console.log('KEYBUFF', keyBuffer)
-    store.toggleTimesheetRecordState(+keyBuffer)
+    processScannedId(keyBuffer)
     keyBuffer = ''
   }
 }
@@ -80,7 +121,7 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
     <div class="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div class="mt-10 sm:mx-auto sm:w-full sm:min-w-[920px]">
         <div class="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
-          <p>Scan Employee ID</p>
+          <p>Scan Employee ID / NFC Tag</p>
           <br />
           <TransitionRoot as="template" :show="store.showDialog">
             <Dialog as="div" class="relative z-10" @close="store.showDialog = false">

@@ -98,8 +98,12 @@ export const useKimaiStore = defineStore(
       }
     }
 
-    async function toggleTimesheetRecordState(userAccNumber: Number) {
-      const userId = userMapping[userAccNumber]
+    async function toggleTimesheetRecordState(userAccNumber: string | number) {
+      const userId = userMapping[String(userAccNumber)]
+      if (!userId) {
+        console.log("USER NOT FOUND", userAccNumber)
+        return
+      }
       console.log("USERID", userAccNumber)
       const runningRecord = await getUnfinishedTimesheetRecord(userId)
       if (runningRecord) {
