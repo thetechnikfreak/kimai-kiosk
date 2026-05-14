@@ -98,13 +98,13 @@ export const useKimaiStore = defineStore(
       }
     }
 
-    async function toggleTimesheetRecordState(employeeId: string | number) {
-      const userId = userMapping[String(employeeId)]
+    async function toggleTimesheetRecordState(scannedEmployeeId: string | number) {
+      const userId = userMapping[String(scannedEmployeeId)]
       if (!userId) {
-        console.log("Unknown employee ID scanned", employeeId)
+        console.log("Unknown employee ID scanned", scannedEmployeeId)
         return
       }
-      console.log("USERID", employeeId)
+      console.log("USERID", scannedEmployeeId)
       const runningRecord = await getUnfinishedTimesheetRecord(userId)
       if (runningRecord) {
         console.log("RUNNING",runningRecord)

@@ -7,6 +7,11 @@ import pconf from './assets/particles.json'
 import { useKimaiStore } from './stores/kimai'
 import { Switch, SwitchGroup, SwitchLabel } from '@headlessui/vue'
 
+type NDEFReaderLike = {
+  scan: () => Promise<void>
+  addEventListener: (type: string, listener: (event: any) => void) => void
+}
+
 const showSettings = ref(false)
 
 let keyBuffer = ''
@@ -33,10 +38,7 @@ function processScannedId(scannedId: string) {
 
 async function startNfcReader() {
   const NDEFReaderCtor = (window as Window & {
-    NDEFReader?: new () => {
-      scan: () => Promise<void>
-      addEventListener: (type: string, listener: (event: any) => void) => void
-    }
+    NDEFReader?: new () => NDEFReaderLike
   }).NDEFReader
 
   if (!NDEFReaderCtor) {
@@ -121,7 +123,7 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
     <div class="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div class="mt-10 sm:mx-auto sm:w-full sm:min-w-[920px]">
         <div class="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
-          <p>Scan Employee Barcode or NFC Tag</p>
+          <p>Scan Employee Barcode or NFC Tag (if supported)</p>
           <br />
           <TransitionRoot as="template" :show="store.showDialog">
             <Dialog as="div" class="relative z-10" @close="store.showDialog = false">
