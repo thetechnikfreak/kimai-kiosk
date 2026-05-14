@@ -104,10 +104,10 @@ export const useKimaiStore = defineStore(
         console.log("Unknown employee ID scanned", scannedIdentifier)
         return
       }
-      console.log("USERID", scannedIdentifier)
+      console.log("SCANNED_IDENTIFIER", scannedIdentifier)
       const runningRecord = await getUnfinishedTimesheetRecord(userId)
       if (runningRecord) {
-        console.log("RUNNING",runningRecord)
+        console.log("RUNNING", runningRecord)
         endTimesheetRecord(runningRecord['id'], userId)
       } else {
         console.log(this.selectedActivity)

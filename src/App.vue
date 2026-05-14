@@ -97,9 +97,6 @@ document.onkeydown = function (evt) {
     keyBuffer = keyBuffer.concat(evt.key)
   }
   if (evt.key == 'Enter') {
-    console.log(keyBuffer)
-    console.log(store.userMapping)
-    console.log('KEYBUFF', keyBuffer)
     processScannedId(keyBuffer)
     keyBuffer = ''
   }
