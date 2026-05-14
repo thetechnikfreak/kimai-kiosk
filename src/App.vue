@@ -10,7 +10,6 @@ import { Switch, SwitchGroup, SwitchLabel } from '@headlessui/vue'
 const showSettings = ref(false)
 
 let keyBuffer = ''
-const textDecoder = new TextDecoder()
 
 const particlesInit = async (engine: Engine) => {
   await loadFull(engine)
@@ -45,6 +44,7 @@ async function startNfcReader() {
   }
 
   try {
+    const textDecoder = new TextDecoder()
     const ndefReader = new NDEFReaderCtor()
     await ndefReader.scan()
     ndefReader.addEventListener('reading', (event) => {
